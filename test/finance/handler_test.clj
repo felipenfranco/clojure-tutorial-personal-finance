@@ -4,15 +4,15 @@
             [finance.handler :refer :all]))
 
 (facts "Root URL is 'Hello World'"
-       (fact "status code is 200"
-             (let [response (app (mock/request :get "/"))]
-               (:status response) => 200))
-
-       (fact "response body is 'Hello World'"
-             (let [response (app (mock/request :get "/"))]
+       (let [response (app (mock/request :get "/"))]
+         (fact "status code is 200"
+               (:status response) => 200)
+         (fact "response body is 'Hello World'"
                (:body response) => "Hello World")))
 
 (facts "Invalid route does not exist"
-       (fact "status code is 404"
-             (let [response (app (mock/request :get "/invalid-route"))]
-               (:status response) => 404)))
+       (let [response (app (mock/request :get "/invalid-route"))]
+         (fact "status code is 404"
+               (:status response) => 404)
+         (fact "response body is 'Not Found'"
+               (:body response) => "Not Found")))
