@@ -9,4 +9,6 @@
   :ring {:handler finance.handler/app}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
-                        [ring/ring-mock "0.3.2"]]}})
+                        [ring/ring-mock "0.3.2"]
+                        [midje "1.9.6"]]
+         :plugins [[lein-midje "3.2.1"]]}})
