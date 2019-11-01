@@ -16,3 +16,10 @@
                (:status response) => 404)
          (fact "response body is 'Not Found'"
                (:body response) => "Not Found")))
+
+(facts "Initial balance is 0"
+       (let [response (app (mock/request :get "/balance"))]
+         (fact "status code is 200"
+               (:status response) => 200)
+         (fact "response body is '0"
+               (:body response) => "0")))
