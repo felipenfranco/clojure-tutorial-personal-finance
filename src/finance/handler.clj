@@ -13,7 +13,7 @@
    :body (json/generate-string content)})
 
 (defn balance-as-json []
-  (as-json {:balance 0}))
+  (as-json {:balance (db/balance)}))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")

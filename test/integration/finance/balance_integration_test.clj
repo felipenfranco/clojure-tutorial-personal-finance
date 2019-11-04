@@ -3,7 +3,8 @@
             [finance.handler :refer [app]]
             [ring.adapter.jetty :refer [run-jetty]]
             [clj-http.client :as http]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [finance.db :as db]))
 
 (def server (atom nil))
 
@@ -27,7 +28,8 @@
              {:content-type :json
               :body (json/generate-string payload)}))
 
-(against-background [(before :facts (start-server port))
+(against-background [(before :facts [(start-server port)
+                                     (db/clean-transactions)])
                      (after :facts (stop-server))]
                     (fact "Initial balance is 0"
                           :integration
@@ -35,4 +37,9 @@
                     (fact "Balance is 10 if only transaction is of type expense with value of 10"
                           :integration
                           (post-to-path "/transactions" {:value 10 :type "expense"})
-                          (get-path-json "/balance") => {:balance 10}))
+                          (get-path-json "/balance") => {:balance -10})
+                    (fact "Balance is 150 when we have one 200 deposit and one 50 expense"
+                          :integration
+                          (post-to-path "/transactions" {:value 50 :type "expense"})
+                          (post-to-path "/transactions" {:value 200 :type "deposit"})
+                          (get-path-json "/balance") => {:balance 150}))

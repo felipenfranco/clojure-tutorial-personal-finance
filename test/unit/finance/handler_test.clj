@@ -20,7 +20,8 @@
                (:body response) => "Not Found")))
 
 (facts "Initial balance is 0" :unit
-       (against-background (json/generate-string {:balance 0}) => "{\"balance\":0}")
+       (against-background [(json/generate-string {:balance 0}) => "{\"balance\":0}"
+                           (db/balance) => 0])
        (let [response (app (mock/request :get "/balance"))]
          (fact "status code is 200"
                (:status response) => 200)
