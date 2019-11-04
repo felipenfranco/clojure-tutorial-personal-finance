@@ -2,7 +2,8 @@
   (:require [midje.sweet :refer :all]
             [finance.handler :refer [app]]
             [ring.adapter.jetty :refer [run-jetty]]
-            [clj-http.client :as http]))
+            [clj-http.client :as http]
+            [cheshire.core :as json]))
 
 (def server (atom nil))
 
@@ -13,7 +14,15 @@
 (defn stop-server []
   (.stop @server))
 
-(against-background [(before :facts (start-server 3001))
+(def port 3001)
+
+(defn get-path [path]
+  (:body (http/get (str "http://localhost:" port path))))
+
+(defn get-path-json [path]
+  (json/parse-string (get-path path) true))
+
+(against-background [(before :facts (start-server port))
                      (after :facts (stop-server))]
- (fact "Initial balance is 0" :integration
-       (:body (http/get "http://localhost:3001/balance")) => "0"))
+                    (fact "Initial balance is 0" :integration
+                          (get-path-json "/balance") => {:balance 0}))
