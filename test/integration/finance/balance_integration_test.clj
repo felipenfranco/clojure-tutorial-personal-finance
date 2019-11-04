@@ -22,7 +22,17 @@
 (defn get-path-json [path]
   (json/parse-string (get-path path) true))
 
+(defn post-to-path [path payload]
+  (http/post (str "http://localhost:" port path)
+             {:content-type :json
+              :body (json/generate-string payload)}))
+
 (against-background [(before :facts (start-server port))
                      (after :facts (stop-server))]
-                    (fact "Initial balance is 0" :integration
-                          (get-path-json "/balance") => {:balance 0}))
+                    (fact "Initial balance is 0"
+                          :integration
+                          (get-path-json "/balance") => {:balance 0})
+                    (fact "Balance is 10 if only transaction is of type expense with value of 10"
+                          :integration
+                          (post-to-path "/transactions" {:value 10 :type "expense"})
+                          (get-path-json "/balance") => {:balance 10}))

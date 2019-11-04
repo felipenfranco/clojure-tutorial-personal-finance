@@ -2,7 +2,8 @@
   (:require [midje.sweet :refer :all]
             [ring.mock.request :as mock]
             [finance.handler :refer :all]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [finance.db :as db]))
 
 (facts "Root URL is 'Hello World'" :unit
        (let [response (app (mock/request :get "/"))]
@@ -27,3 +28,15 @@
                (get-in response [:headers "Content-Type"]) => "application/json; charset=utf-8")
          (fact "response body is '0"
                (:body response) => "{\"balance\":0}")))
+
+(facts "Register a value 10 expense transaction" :unit
+       (against-background (db/register-transaction {:value 10 :type "expense"})
+                           => {:id 1 :value 10 :type "expense"})
+       (let [response
+             (app (-> (mock/request :post "/transactions")
+                      (mock/json-body {:value 10 :type "expense"})))]
+         (fact "status code of response is 201"
+               (:status response) => 201)
+         (fact "response body is JSON with payload"
+               (:body response) =>
+               "{\"id\":1,\"value\":10,\"type\":\"expense\"}")))
