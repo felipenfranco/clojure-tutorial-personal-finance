@@ -66,3 +66,18 @@ To run the JAR artifact
 
     > curl localhost:3000/deposits
     {"transactions":[{"value":1700,"type":"deposit"}]}
+
+    > curl -X POST -d '{"value": 1700, "type": "deposit", "tags": ["A"]}' -H "Content-Type: application/json" localhost:3000/transactions
+    {"value":1700,"type":"deposit","tags":["A"],"id":4}
+
+    >  curl -X POST -d '{"value": 1300, "type": "expense", "tags": ["B", "C"]}' -H "Content-Type: application/json" localhost:3000/transactions
+    {"value":1300,"type":"expense","tags":["B", "C"],"id":5}
+
+    > curl localhost:3000/transactions?tag=A
+    {"transactions":[{"value":1700,"type":"deposit","tags":["A"]}]}
+
+    > curl localhost:3000/transactions?tag=B
+    {"transactions":[{"value":1300,"type":"expense","tags":["B","C"]}]}
+
+    > curl localhost:3000/transactions?tag=A\&tag=C
+    {"transactions":[{"value":1700,"type":"deposit","tags":["A"]},{"value":1300,"type":"expense","tags":["B","C"]}]}
