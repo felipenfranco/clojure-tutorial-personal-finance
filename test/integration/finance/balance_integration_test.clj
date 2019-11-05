@@ -26,7 +26,8 @@
 (defn post-to-path [path payload]
   (http/post (str "http://localhost:" port path)
              {:content-type :json
-              :body (json/generate-string payload)}))
+              :body (json/generate-string payload)
+              :throw-exceptions false}))
 
 (against-background [(before :facts [(start-server port)
                                      (db/clean-transactions)])
@@ -42,4 +43,22 @@
                           :integration
                           (post-to-path "/transactions" {:value 50 :type "expense"})
                           (post-to-path "/transactions" {:value 200 :type "deposit"})
-                          (get-path-json "/balance") => {:balance 150}))
+                          (get-path-json "/balance") => {:balance 150})
+                    (fact "Rejects no value transaction"
+                          :integration
+                          (let [response (post-to-path "/transactions" {:type "expense"})]
+                            (:status response) => 422))
+                    (fact "Rejects negative value transaction"
+                          :integration
+                          (let [response (post-to-path "/transactions" {:value -100
+                                                                        :type "expense"})]
+                            (:status response) => 422))
+                    (fact "Rejects non-number value transaction"
+                          :integration
+                          (let [response (post-to-path "/transactions" {:value "one thousand"
+                                                                        :type "expense"})]
+                            (:status response) => 422))
+                    (fact "Rejects no-type transaction"
+                          :integration
+                          (let [response (post-to-path "/transactions" {:type "expense"})]
+                            (:status response) => 422)))
