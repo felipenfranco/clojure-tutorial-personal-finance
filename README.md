@@ -81,3 +81,11 @@ To run the JAR artifact
 
     > curl localhost:3000/transactions?tag=A\&tag=C
     {"transactions":[{"value":1700,"type":"deposit","tags":["A"]},{"value":1300,"type":"expense","tags":["B","C"]}]}
+
+
+## Database configuration
+
+We will use Datomic as database.
+Download and unzip datomic. On the root folder of Datomic, run the following command to initialize an in-memory database for testing purposes:
+
+    > bin/run -m datomic.peer-server -h localhost -p 8998 -a myaccesskey,mysecret -d finance_db,datomic:mem://finance_db
