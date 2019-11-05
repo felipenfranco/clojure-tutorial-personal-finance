@@ -24,3 +24,6 @@
 (defn register-transaction [transaction]
   (let [updated-transactions (swap! transactions-register conj transaction)]
     (merge transaction {:id (count updated-transactions)})))
+
+(defn transactions-of-type [type]
+  (filter #(= (:type %) type) (transactions)))

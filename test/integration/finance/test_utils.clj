@@ -5,6 +5,8 @@
             [cheshire.core :as json]
             [finance.db :as db]))
 
+(def port 3001)
+
 (def server (atom nil))
 
 (defn start-server [port]
@@ -13,8 +15,6 @@
 
 (defn stop-server []
   (.stop @server))
-
-(def port 3001)
 
 (defn get-path [path]
   (:body (http/get (str "http://localhost:" port path))))

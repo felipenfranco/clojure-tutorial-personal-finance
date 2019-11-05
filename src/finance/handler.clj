@@ -26,6 +26,12 @@
         (-> (db/register-transaction transaction)
             (as-json 201))
         (as-json {:message "Invalid transaction"} 422))))
+  (GET "/transactions" []
+    (as-json {:transactions (db/transactions)}))
+  (GET "/expenses" []
+    (as-json {:transactions (db/transactions-of-type "expense")}))
+  (GET "/deposits" []
+    (as-json {:transactions (db/transactions-of-type "deposit")}))
   (route/not-found "Not Found"))
 
 (def app
